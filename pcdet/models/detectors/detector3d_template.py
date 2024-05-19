@@ -338,7 +338,7 @@ class Detector3DTemplate(nn.Module):
             gt_iou = box_preds.new_zeros(box_preds.shape[0])
         return recall_dict
 
-    def _load_state_dict(self, model_state_disk, *, strict=True):
+    def _load_state_dict(self, model_state_disk, *, strict=True, logger=None):
         state_dict = self.state_dict()  # local cache of state_dict
 
         spconv_keys = find_all_spconv_keys(self)
@@ -360,7 +360,7 @@ class Detector3DTemplate(nn.Module):
 
             if key in state_dict and state_dict[key].shape == val.shape:
                 update_model_state[key] = val
-                # logger.info('Update weight %s: %s' % (key, str(val.shape)))
+                logger.info('Update weight %s: %s' % (key, str(val.shape)))
 
         if strict:
             self.load_state_dict(update_model_state)
@@ -376,13 +376,13 @@ class Detector3DTemplate(nn.Module):
         logger.info('==> Loading parameters from checkpoint %s to %s' % (filename, 'CPU' if to_cpu else 'GPU'))
         loc_type = torch.device('cpu') if to_cpu else None
         checkpoint = torch.load(filename, map_location=loc_type)
-        model_state_disk = checkpoint['model_state']
+        model_state_disk = checkpoint#['model_state']
 
         version = checkpoint.get("version", None)
         if version is not None:
             logger.info('==> Checkpoint trained from version: %s' % version)
 
-        state_dict, update_model_state = self._load_state_dict(model_state_disk, strict=False)
+        state_dict, update_model_state = self._load_state_dict(model_state_disk, strict=False, logger=logger)
 
         for key in state_dict:
             if key not in update_model_state:

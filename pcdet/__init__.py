@@ -1,12 +1,12 @@
 import subprocess
 from pathlib import Path
-
+# import 
+# Commenting out the import statement for version
 from .version import __version__
 
 __all__ = [
     '__version__'
 ]
-
 
 def get_git_commit_number():
     if not (Path(__file__).parent / '../.git').exists():
@@ -16,9 +16,8 @@ def get_git_commit_number():
     git_commit_number = cmd_out.stdout.decode('utf-8')[:7]
     return git_commit_number
 
-
 script_version = get_git_commit_number()
 
-
+# Commenting out the version check and update
 if script_version not in __version__:
     __version__ = __version__ + '+py%s' % script_version

@@ -24,10 +24,11 @@ class KittiDataset(DatasetTemplate):
             dataset_cfg=dataset_cfg, class_names=class_names, training=training, root_path=root_path, logger=logger
         )
         self.split = self.dataset_cfg.DATA_SPLIT[self.mode]
+        
         self.root_split_path = self.root_path / ('training' if self.split != 'test' else 'testing')
-        self.repeat = self.dataset_cfg.REPEAT
+        # self.repeat = self.dataset_cfg.REPEAT
 
-        split_dir = self.root_path / 'ImageSets' / (self.split + '.txt')
+        split_dir = self.root_path / 'ImageSets' / ('train_0.01_1' + '.txt')
         
         print(split_dir)
         # self.sample_id_list = [x.strip() for x in open(split_dir).readlines()] if split_dir.exists() else None
@@ -128,7 +129,7 @@ class KittiDataset(DatasetTemplate):
     def get_calib(self, idx):
         calib_file = self.root_split_path / 'calib' / ('%s.txt' % idx)
         assert calib_file.exists()
-        return calibration_kitti.Calibration(calib_file)
+        return calibration_kitti.Calibration(calib_file,False)
 
     def get_road_plane(self, idx):
         plane_file = self.root_split_path / 'planes' / ('%s.txt' % idx)
@@ -388,7 +389,7 @@ class KittiDataset(DatasetTemplate):
             return len(self.kitti_infos) * self.total_epochs
 
         if self.training:
-            return len(self.kitti_infos) * self.repeat
+            return len(self.kitti_infos) #* self.repeat
         else:
             return len(self.kitti_infos)
 
